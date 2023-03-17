@@ -1,4 +1,4 @@
-use axum::{error_handling::HandleErrorLayer, middleware::from_fn, Json, Router};
+use axum::{error_handling::HandleErrorLayer, middleware::from_fn, routing::get, Json, Router};
 use axum_client_ip::SecureClientIpSource;
 use axum_extra::routing::{RouterExt, TypedPath};
 use error::HTTPResult;
@@ -31,6 +31,7 @@ async fn main() {
     }
 
     let app = Router::new()
+        .route("/ping", get(ping))
         .typed_get(get_location)
         .layer(
             ServiceBuilder::new()
@@ -86,4 +87,8 @@ struct IPParams {
 async fn get_location(IPParams { ip }: IPParams) -> HTTPResult<Json<ip::Location>> {
     let data = ip::get_location(&ip)?;
     Ok(Json(data))
+}
+
+async fn ping() -> &'static str {
+    "pong"
 }
