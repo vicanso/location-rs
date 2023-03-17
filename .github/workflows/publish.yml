@@ -67,6 +67,8 @@ jobs:
         with:
           platforms: linux/amd64, linux/arm64
           push: true
+          tags:
+            - "0.0.1"
           # tags: ${{ steps.meta.outputs.tags }}
       - name: Image digest
         run: |
