@@ -1,0 +1,60 @@
+.contentWrapper {
+  width: 1200px;
+  margin: auto;
+  padding-bottom: 30px;
+}
+.header {
+  background-color: #fff !important;
+  color: #171b21 !important;
+  border-bottom: 1px solid #f0f0f0;
+}
+.header.dark {
+  background-color: #171b21 !important;
+  color: #fff !important;
+  border-bottom: none;
+}
+
+.logo {
+  float: left;
+  width: 150px;
+  font-size: 20px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  line-height: 30px;
+  font-weight: 900;
+}
+.logo span {
+  font-size: 18px;
+}
+
+.search {
+  float: left;
+  margin-top: 10px;
+  width: 900px;
+}
+
+.mtop30 {
+  margin-top: 30px;
+}
+
+.fixSearch {
+  position: fixed;
+  width: 800px;
+  left: 50%;
+  top: 200px;
+  margin-left: -400px;
+}
+.fixSearch .ant-input-affix-wrapper {
+  padding: 15px;
+}
+.fixSearch .ant-btn {
+  height: 55px;
+}
+.fixSearch .desc {
+  text-align: center;
+  margin-top: 40px;
+}
+.fixSearch .ant-typography {
+  font-size: 16px;
+  line-height: 2em;
+}

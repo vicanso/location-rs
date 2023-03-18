@@ -1,6 +1,14 @@
-FROM rust:alpine as builder
+FROM node:18-alpine as webbuilder
 
 COPY . /location-rs
+RUN apk update \
+  && apk add git make \
+  && cd /location-rs \
+  && make build-web
+
+FROM rust:alpine as builder
+
+COPY --from=webbuilder /diving-rs /diving-rs
 
 RUN apk update \
   && apk add git make build-base pkgconfig
