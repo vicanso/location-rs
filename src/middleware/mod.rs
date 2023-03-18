@@ -1,5 +1,5 @@
 use axum::{body::Body, http::Request, middleware::Next, response::Response};
-use axum_client_ip::SecureClientIp;
+use axum_client_ip::InsecureClientIp;
 use chrono::Utc;
 use tracing::{event, Level};
 
@@ -24,7 +24,7 @@ pub async fn entry<B>(req: Request<B>, next: Next<B>) -> Response {
 }
 
 pub async fn access_log(
-    SecureClientIp(ip): SecureClientIp,
+    InsecureClientIp(ip): InsecureClientIp,
     req: Request<Body>,
     next: Next<Body>,
 ) -> HTTPResult<Response> {

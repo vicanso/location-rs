@@ -1,5 +1,4 @@
 use axum::{error_handling::HandleErrorLayer, middleware::from_fn, routing::get, Json, Router};
-use axum_client_ip::SecureClientIpSource;
 use axum_extra::routing::{RouterExt, TypedPath};
 use error::HTTPResult;
 use serde::Deserialize;
@@ -43,8 +42,7 @@ async fn main() {
         )
         // 后面的layer先执行
         .layer(from_fn(middleware::access_log))
-        .layer(from_fn(middleware::entry))
-        .layer(SecureClientIpSource::ConnectInfo.into_extension());
+        .layer(from_fn(middleware::entry));
 
     let addr = "127.0.0.1:7001".parse().unwrap();
     info!("listening on {}", addr);
@@ -99,7 +97,6 @@ async fn ping() -> &'static str {
 
 async fn serve(uri: Uri) -> dist::StaticFile {
     let mut filename = &uri.path()[1..];
-    // html无版本号，因此不设置缓存
     if filename.is_empty() {
         filename = "index.html";
     }

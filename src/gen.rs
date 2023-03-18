@@ -161,7 +161,7 @@ pub fn generate_ip_data(max: i64) {
             ipv6_location_data.push(location_data);
         }
     }
-    println!("count total: {}", country_list.len());
+    println!("country total: {}", country_list.len());
     println!("province total: {}", province_list.len());
     println!("city total: {}", city_list.len());
 
