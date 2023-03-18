@@ -14,7 +14,7 @@ csv = "1.2.1"
 hex = "0.4.3"
 mime_guess = "2.0.4"
 rust-embed = "6.6.0"
-serde = { version = "1.0.156", features = ["derive"] }
+serde = { version = "v1.0.157", features = ["derive"] }
 serde_json = "1.0.94"
 tokio = { version = "1.26.0", features = ["macros", "rt", "rt-multi-thread", "net", "signal"] }
 tower = { version = "0.4.13", features = ["timeout"]}

@@ -44,8 +44,8 @@ async fn main() {
         .layer(from_fn(middleware::access_log))
         .layer(from_fn(middleware::entry));
 
-    let addr = "127.0.0.1:7001".parse().unwrap();
-    info!("listening on {}", addr);
+    let addr = "0.0.0.0:7001".parse().unwrap();
+    info!("listening on http://127.0.0.1/");
     axum::Server::bind(&addr)
         .serve(app.into_make_service_with_connect_info::<SocketAddr>())
         .with_graceful_shutdown(shutdown_signal())
