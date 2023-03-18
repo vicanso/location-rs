@@ -1,6 +1,6 @@
 # location-rs
 
-Get the location by ip address, it support ipv4 and ipv6.
+Get the location by ip address, it supports ipv4 and ipv6.
 
 ![](./assets/ip-location.png)
 
