@@ -2,6 +2,8 @@
 
 Get the location by ip address, it support ipv4 and ipv6.
 
+![](./assets/ip-location.png)
+
 `curl 'http://127.0.0.1:7001/api/ip-locations/1.0.132.192'`
 
 ## start
