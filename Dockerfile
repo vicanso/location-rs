@@ -8,7 +8,7 @@ RUN apk update \
 
 FROM rust:alpine as builder
 
-COPY --from=webbuilder /diving-rs /diving-rs
+COPY --from=webbuilder /location-rs /location-rs
 
 RUN apk update \
   && apk add git make build-base pkgconfig
