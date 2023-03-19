@@ -1,9 +1,10 @@
 use axum::http::Uri;
-use axum::{error_handling::HandleErrorLayer, middleware::from_fn, routing::get, Json, Router};
-use axum_extra::routing::{RouterExt, TypedPath};
+use axum::{
+    error_handling::HandleErrorLayer, extract::Path, middleware::from_fn, routing::get, Json,
+    Router,
+};
+use axum_client_ip::InsecureClientIp;
 use error::HTTPResult;
-use middleware::{clone_value_from_task_local, CLIENT_IP};
-use serde::Deserialize;
 use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::signal;
@@ -34,7 +35,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/ping", get(ping))
-        .typed_get(get_location)
+        .route("/api/ip-locations/:ip", get(get_location))
         .fallback(get(serve))
         .layer(
             ServiceBuilder::new()
@@ -80,16 +81,13 @@ async fn shutdown_signal() {
     info!("signal received, starting graceful shutdown");
 }
 
-#[derive(TypedPath, Deserialize)]
-#[typed_path("/api/ip-locations/:ip")]
-struct IPParams {
-    ip: String,
-}
-
-async fn get_location(IPParams { ip }: IPParams) -> HTTPResult<Json<ip::Location>> {
+async fn get_location(
+    InsecureClientIp(client_ip): InsecureClientIp,
+    Path(ip): Path<String>,
+) -> HTTPResult<Json<ip::Location>> {
     // 0.0.0.0
     let value = if ip == "0.0.0.0" {
-        CLIENT_IP.with(clone_value_from_task_local)
+        client_ip.to_string()
     } else {
         ip
     };
