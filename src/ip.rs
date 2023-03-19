@@ -5,6 +5,7 @@ use std::str::FromStr;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Location {
+    ip: String,
     country: String,
     province: String,
     city: String,
@@ -34,13 +35,14 @@ fn get_location_info(data: Option<&[usize; 3]>) -> Location {
             country: get_country(value[0]),
             province: get_province(value[1]),
             city: get_city(value[2]),
+            ..Default::default()
         };
     }
     Location::default()
 }
 
 pub fn get_location(ip: &str) -> Result<Location, AddrParseError> {
-    let result = if ip.contains(':') {
+    let mut result = if ip.contains(':') {
         let addr = Ipv6Addr::from_str(ip)?;
         let value: u128 = addr.into();
         let index = ip_data::IPV6_LIST
@@ -55,5 +57,6 @@ pub fn get_location(ip: &str) -> Result<Location, AddrParseError> {
             .unwrap_or_else(|index| index);
         get_location_info(ip_data::IPV4_LOCATION_LIST.get(index))
     };
+    result.ip = ip.to_string();
     Ok(result)
 }

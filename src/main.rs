@@ -1,20 +1,21 @@
+use axum::http::Uri;
 use axum::{error_handling::HandleErrorLayer, middleware::from_fn, routing::get, Json, Router};
 use axum_extra::routing::{RouterExt, TypedPath};
 use error::HTTPResult;
+use middleware::{clone_value_from_task_local, CLIENT_IP};
 use serde::Deserialize;
 use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tracing::info;
-use axum::http::Uri;
 
+mod dist;
 mod error;
 mod gen;
 mod ip;
 mod ip_data;
 mod middleware;
-mod dist;
 
 #[tokio::main]
 async fn main() {
@@ -76,8 +77,7 @@ async fn shutdown_signal() {
         _ = terminate => {},
     }
 
-    info!("signal received, starting graceful shutdown")
-    ;
+    info!("signal received, starting graceful shutdown");
 }
 
 #[derive(TypedPath, Deserialize)]
@@ -87,7 +87,13 @@ struct IPParams {
 }
 
 async fn get_location(IPParams { ip }: IPParams) -> HTTPResult<Json<ip::Location>> {
-    let data = ip::get_location(&ip)?;
+    // 0.0.0.0
+    let value = if ip == "0.0.0.0" {
+        CLIENT_IP.with(clone_value_from_task_local)
+    } else {
+        ip
+    };
+    let data = ip::get_location(&value)?;
     Ok(Json(data))
 }
 

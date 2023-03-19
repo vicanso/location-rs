@@ -14,6 +14,7 @@ where
 
 tokio::task_local! {
     pub static STARTED_AT: i64;
+    pub static CLIENT_IP: String;
 }
 
 pub async fn entry<B>(req: Request<B>, next: Next<B>) -> Response {
@@ -28,24 +29,28 @@ pub async fn access_log(
     req: Request<Body>,
     next: Next<Body>,
 ) -> HTTPResult<Response> {
-    let start_at = STARTED_AT.with(clone_value_from_task_local);
-    let uri = req.uri().to_string();
-    let method = req.method().to_string();
+    CLIENT_IP
+        .scope(ip.to_string(), async {
+            let start_at = STARTED_AT.with(clone_value_from_task_local);
+            let uri = req.uri().to_string();
+            let method = req.method().to_string();
 
-    let resp = next.run(req).await;
+            let resp = next.run(req).await;
 
-    let status = resp.status().as_u16();
+            let status = resp.status().as_u16();
 
-    let cost = Utc::now().timestamp_millis() - start_at;
-    event!(
-        Level::INFO,
-        category = "accessLog",
-        ip = ip.to_string(),
-        method,
-        uri,
-        status,
-        cost,
-    );
+            let cost = Utc::now().timestamp_millis() - start_at;
+            event!(
+                Level::INFO,
+                category = "accessLog",
+                ip = ip.to_string(),
+                method,
+                uri,
+                status,
+                cost,
+            );
 
-    Ok(resp)
+            Ok(resp)
+        })
+        .await
 }

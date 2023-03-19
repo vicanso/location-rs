@@ -1,7 +1,7 @@
-use axum::response::{IntoResponse, Response};
-use hex::encode;
 use axum::http::header;
 use axum::http::StatusCode;
+use axum::response::{IntoResponse, Response};
+use hex::encode;
 use rust_embed::{EmbeddedFile, RustEmbed};
 
 #[derive(RustEmbed)]

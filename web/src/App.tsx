@@ -2,18 +2,10 @@ import { useState, FC } from "react";
 import {
   ConfigProvider,
   theme,
-  Card,
   Layout,
   Input,
   message,
   Descriptions,
-  Form,
-  Select,
-  Col,
-  Row,
-  Checkbox,
-  Typography,
-  Space,
   Button,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -23,9 +15,8 @@ import axios, { AxiosError } from "axios";
 import "./App.css";
 
 const { defaultAlgorithm, darkAlgorithm } = theme;
-const { Header, Content } = Layout;
+const { Header } = Layout;
 const { Search } = Input;
-const { Paragraph } = Typography;
 
 const isDarkMode = () =>
   window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -61,6 +52,7 @@ const getGithubIcon = (isDarkMode: boolean) => {
 };
 
 interface LocationInfo {
+  ip: string;
   country: string;
   province: string;
   city: string;
@@ -111,6 +103,7 @@ const App: FC = () => {
     );
     return (
       <Search
+        defaultValue={"0.0.0.0"}
         autoFocus={true}
         placeholder="input the ip address"
         allowClear
@@ -142,6 +135,9 @@ const App: FC = () => {
         <div className="fixSearch">
           {getSearchView()}
           <Descriptions className="mtop30" title="Location Information:">
+            <Descriptions.Item label="IP" span={12}>
+              {locationInfo?.ip || "--"}
+            </Descriptions.Item>
             <Descriptions.Item label="Country">
               {locationInfo?.country || "--"}
             </Descriptions.Item>
