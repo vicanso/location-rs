@@ -1,4 +1,4 @@
-import { useState, FC } from "react";
+import { useState, FC, Component, ReactNode } from "react";
 import {
   ConfigProvider,
   theme,
@@ -57,101 +57,128 @@ interface LocationInfo {
   province: string;
   city: string;
 }
+interface AppState {
+  loading: boolean;
+  locationInfo: LocationInfo;
+}
+interface App {
+  state: AppState;
+}
 
-const App: FC = () => {
-  const [messageApi, contextHolder] = message.useMessage();
-
-  const [loading, setLoading] = useState(false);
-  const [locationInfo, setLocationInfo] = useState<LocationInfo>();
-
-  const onSearch = async (value: string) => {
-    if (loading) {
+class App extends Component {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      loading: false,
+      locationInfo: {} as LocationInfo,
+    };
+  }
+  componentDidMount(): void {
+    // 0.0.0.0 -> client ip
+    this.onSearch("0.0.0.0");
+  }
+  async onSearch(value: string) {
+    if (this.state.loading) {
       return;
     }
-    const ip = value.trim() || "0.0.0.0";
-    setLoading(true);
+    const ip = value.trim();
+    if (!ip) {
+      return;
+    }
+    this.setState({
+      loading: true,
+    });
     try {
-      const { data } = await axios.get<LocationInfo>(`/api/ip-locations/${ip}`);
-      setLocationInfo(data);
+      const { data } = await axios.get<LocationInfo>(`/api/ip-locations/${ip}`, {
+        timeout: 10 * 1000,
+      });
+      this.setState({
+        locationInfo: data,
+      });
     } catch (err: any) {
-      let message = err?.message as string;
+      let msg = err?.message as string;
       let axiosErr = err as AxiosError;
       if (axiosErr?.response?.data) {
         let data = axiosErr.response.data as {
           message: string;
         };
-        message = data.message || "";
+        msg = data.message || "";
       }
-      messageApi.error(message || "get ip location fail", 10);
-      setLocationInfo({} as LocationInfo);
+      message.error(msg || "get ip location fail", 10);
+      this.setState({
+        locationInfo: {},
+      });
     } finally {
-      setLoading(false);
+      this.setState({
+        loading: false,
+      });
     }
-  };
-
-  const getSearchView = () => {
-    const btn = (
-      <Button
-        style={{
-          width: "60px",
-        }}
-        loading={loading}
-        type="primary"
-        shape="circle"
-        icon={<SearchOutlined />}
-      />
-    );
-    return (
-      <Search
-        defaultValue={"0.0.0.0"}
-        autoFocus={true}
-        placeholder="input the ip address"
-        allowClear
-        enterButton={btn}
-        size="large"
-        onSearch={onSearch}
-      />
-    );
-  };
-  let headerClass = "header";
-  if (isDarkMode()) {
-    headerClass += " dark";
   }
+  render(): ReactNode {
+    const { loading, locationInfo } = this.state;
 
-  return (
-    <ConfigProvider
-      theme={{
-        algorithm: isDarkMode() ? darkAlgorithm : defaultAlgorithm,
-      }}
-    >
-      {contextHolder}
-      <Layout>
-        {getGithubIcon(isDarkMode())}
-        <Header className={headerClass}>
-          <div className="contentWrapper">
-            <div className="logo">IP Location</div>
+    const getSearchView = () => {
+      const btn = (
+        <Button
+          style={{
+            width: "60px",
+          }}
+          loading={loading}
+          type="primary"
+          shape="circle"
+          icon={<SearchOutlined />}
+        />
+      );
+      return (
+        <Search
+          autoFocus={true}
+          placeholder="input the ip address"
+          allowClear
+          enterButton={btn}
+          size="large"
+          onSearch={this.onSearch.bind(this)}
+        />
+      );
+    };
+    let headerClass = "header";
+    if (isDarkMode()) {
+      headerClass += " dark";
+    }
+
+    return (
+      <ConfigProvider
+        theme={{
+          algorithm: isDarkMode() ? darkAlgorithm : defaultAlgorithm,
+        }}
+      >
+        <Layout>
+          {getGithubIcon(isDarkMode())}
+          <Header className={headerClass}>
+            <div className="contentWrapper">
+              <div className="logo">IP Location</div>
+            </div>
+          </Header>
+          <div className="fixSearch">
+            {getSearchView()}
+            <Descriptions className="mtop30" title="Location Information:">
+              <Descriptions.Item label="IP" span={3}>
+                {locationInfo?.ip || "--"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Country">
+                {locationInfo?.country || "--"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Province">
+                {locationInfo?.province || "--"}
+              </Descriptions.Item>
+              <Descriptions.Item label="City">
+                {locationInfo?.city || "--"}
+              </Descriptions.Item>
+            </Descriptions>
           </div>
-        </Header>
-        <div className="fixSearch">
-          {getSearchView()}
-          <Descriptions className="mtop30" title="Location Information:">
-            <Descriptions.Item label="IP" span={12}>
-              {locationInfo?.ip || "--"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Country">
-              {locationInfo?.country || "--"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Province">
-              {locationInfo?.province || "--"}
-            </Descriptions.Item>
-            <Descriptions.Item label="City">
-              {locationInfo?.city || "--"}
-            </Descriptions.Item>
-          </Descriptions>
-        </div>
-      </Layout>
-    </ConfigProvider>
-  );
-};
+        </Layout>
+      </ConfigProvider>
+    );
+  }
+}
 
 export default App;

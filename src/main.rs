@@ -85,6 +85,7 @@ async fn get_location(
     InsecureClientIp(client_ip): InsecureClientIp,
     Path(ip): Path<String>,
 ) -> HTTPResult<Json<ip::Location>> {
+    // TODO 判断是否内网
     // 0.0.0.0
     let value = if ip == "0.0.0.0" {
         client_ip.to_string()
