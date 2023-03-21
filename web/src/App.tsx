@@ -89,9 +89,12 @@ class App extends Component {
       loading: true,
     });
     try {
-      const { data } = await axios.get<LocationInfo>(`/api/ip-locations/${ip}`, {
-        timeout: 10 * 1000,
-      });
+      const { data } = await axios.get<LocationInfo>(
+        `/api/ip-locations/${ip}`,
+        {
+          timeout: 10 * 1000,
+        }
+      );
       this.setState({
         locationInfo: data,
       });

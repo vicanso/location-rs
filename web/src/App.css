@@ -1,5 +1,5 @@
 .contentWrapper {
-  width: 1200px;
+  max-width: 1200px;
   margin: auto;
   padding-bottom: 30px;
 }
@@ -30,7 +30,7 @@
 .search {
   float: left;
   margin-top: 10px;
-  width: 900px;
+  max-width: 900px;
 }
 
 .mtop30 {
@@ -44,6 +44,19 @@
   top: 200px;
   margin-left: -400px;
 }
+@media screen and (max-width: 800px) {
+  .fixSearch {
+    width: 400px;
+    margin-left: -200px;
+  }
+}
+@media screen and (max-width: 400px) {
+  .fixSearch {
+    width: 300px;
+    margin-left: -150px;
+  }
+}
+
 .fixSearch .ant-input-affix-wrapper {
   padding: 15px;
 }
