@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.6.11"
+axum = "0.6.12"
 axum-client-ip = "0.4.0"
-axum-extra = { version = "0.7.1", features = ["typed-routing"] }
+axum-extra = { version = "0.7.2", features = ["typed-routing"] }
 chrono = "0.4.24"
 csv = "1.2.1"
 hex = "0.4.3"
