@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.6.12"
+axum = "0.6.16"
 axum-client-ip = "0.4.0"
 axum-extra = { version = "0.7.2", features = ["typed-routing"] }
 chrono = "0.4.24"
@@ -14,12 +14,12 @@ csv = "1.2.1"
 hex = "0.4.3"
 mime_guess = "2.0.4"
 rust-embed = "6.6.0"
-serde = { version = "1.0.159", features = ["derive"] }
-serde_json = "1.0.95"
+serde = { version = "1.0.160", features = ["derive"] }
+serde_json = "1.0.96"
 tokio = { version = "1.27.0", features = ["macros", "rt", "rt-multi-thread", "net", "signal"] }
 tower = { version = "0.4.13", features = ["timeout"]}
 tracing = "0.1.37"
-tracing-subscriber = "0.3.16"
+tracing-subscriber = { version = "0.3.17", features = ["local-time"] }
 zip = "0.6.4"
 
 [profile.release]

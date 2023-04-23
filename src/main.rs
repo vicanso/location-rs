@@ -7,9 +7,12 @@ use axum_client_ip::InsecureClientIp;
 use error::HTTPResult;
 use std::net::SocketAddr;
 use std::time::Duration;
+use std::{env, str::FromStr};
 use tokio::signal;
 use tower::ServiceBuilder;
 use tracing::info;
+use tracing::Level;
+use tracing_subscriber::FmtSubscriber;
 
 mod dist;
 mod error;
@@ -18,9 +21,25 @@ mod ip;
 mod ip_data;
 mod middleware;
 
+fn init_logger() {
+    let mut level = Level::INFO;
+    if let Ok(log_level) = env::var("LOG_LEVEL") {
+        if let Ok(value) = Level::from_str(log_level.as_str()) {
+            level = value;
+        }
+    }
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(level)
+        .with_timer(
+            tracing_subscriber::fmt::time::OffsetTime::local_rfc_3339()
+                .expect("could not get local offset!"),
+        )
+        .finish();
+    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+}
+
 #[tokio::main]
-async fn main() {
-    tracing_subscriber::fmt::init();
+async fn run() {
     if let Some(arg) = std::env::args().nth(1) {
         if arg == "build" {
             let count = std::env::args()
@@ -106,4 +125,12 @@ async fn serve(uri: Uri) -> dist::StaticFile {
         filename = "index.html";
     }
     dist::get_static_file(filename)
+}
+
+fn main() {
+    // Because we need to get the local offset before Tokio spawns any threads, our `main`
+    // function cannot use `tokio::main`.
+
+    init_logger();
+    run();
 }
