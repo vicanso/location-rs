@@ -28,30 +28,24 @@ fn init_logger() {
             level = value;
         }
     }
+
+    let timer = tracing_subscriber::fmt::time::OffsetTime::local_rfc_3339().unwrap_or_else(|_| {
+        tracing_subscriber::fmt::time::OffsetTime::new(
+            time::UtcOffset::from_hms(0, 0, 0).unwrap(),
+            time::format_description::well_known::Rfc3339,
+        )
+    });
+
     let subscriber = FmtSubscriber::builder()
         .with_max_level(level)
-        .with_timer(
-            tracing_subscriber::fmt::time::OffsetTime::local_rfc_3339()
-                .expect("could not get local offset!"),
-        )
+        .with_timer(timer)
         .finish();
+
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 }
 
 #[tokio::main]
 async fn run() {
-    if let Some(arg) = std::env::args().nth(1) {
-        if arg == "build" {
-            let count = std::env::args()
-                .nth(2)
-                .unwrap_or_default()
-                .parse::<i64>()
-                .unwrap_or_default();
-            gen::generate_ip_data(count);
-            return;
-        }
-    }
-
     let app = Router::new()
         .route("/ping", get(ping))
         .route("/api/ip-locations/:ip", get(get_location))
@@ -128,6 +122,17 @@ async fn serve(uri: Uri) -> dist::StaticFile {
 }
 
 fn main() {
+    if let Some(arg) = std::env::args().nth(1) {
+        if arg == "build" {
+            let count = std::env::args()
+                .nth(2)
+                .unwrap_or_default()
+                .parse::<i64>()
+                .unwrap_or_default();
+            gen::generate_ip_data(count);
+            return;
+        }
+    }
     // Because we need to get the local offset before Tokio spawns any threads, our `main`
     // function cannot use `tokio::main`.
 

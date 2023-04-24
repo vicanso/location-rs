@@ -13,13 +13,14 @@ chrono = "0.4.24"
 csv = "1.2.1"
 hex = "0.4.3"
 mime_guess = "2.0.4"
-rust-embed = "6.6.0"
+rust-embed = { version = "6.6.1", features = ["compression", "mime-guess"] }
 serde = { version = "1.0.160", features = ["derive"] }
 serde_json = "1.0.96"
+time = "0.3.20"
 tokio = { version = "1.27.0", features = ["macros", "rt", "rt-multi-thread", "net", "signal"] }
 tower = { version = "0.4.13", features = ["timeout"]}
 tracing = "0.1.37"
-tracing-subscriber = { version = "0.3.17", features = ["local-time"] }
+tracing-subscriber = { version = "0.3.17", features = [ "local-time"] }
 zip = "0.6.4"
 
 [profile.release]
