@@ -48,7 +48,7 @@ fn init_logger() {
 async fn run() {
     let app = Router::new()
         .route("/ping", get(ping))
-        .route("/api/ip-locations/:ip", get(get_location))
+        .route("/api/ip-locations/{ip}", get(get_location))
         .fallback(get(serve))
         .layer(
             ServiceBuilder::new()
@@ -59,13 +59,16 @@ async fn run() {
         .layer(from_fn(middleware::access_log))
         .layer(from_fn(middleware::entry));
 
-    let addr = "0.0.0.0:7001".parse().unwrap();
-    info!("listening on http://127.0.0.1:7001/");
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service_with_connect_info::<SocketAddr>())
-        .with_graceful_shutdown(shutdown_signal())
-        .await
-        .unwrap();
+    let addr = "0.0.0.0:7001";
+    info!("listening on http://{addr}/");
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await
+    .unwrap();
 }
 
 async fn shutdown_signal() {

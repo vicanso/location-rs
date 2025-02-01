@@ -16,7 +16,7 @@ tokio::task_local! {
     pub static STARTED_AT: i64;
 }
 
-pub async fn entry<B>(req: Request<B>, next: Next<B>) -> Response {
+pub async fn entry(req: Request<Body>, next: Next) -> Response {
     // 设置请求处理开始时间
     STARTED_AT
         .scope(Utc::now().timestamp_millis(), async { next.run(req).await })
@@ -26,7 +26,7 @@ pub async fn entry<B>(req: Request<B>, next: Next<B>) -> Response {
 pub async fn access_log(
     InsecureClientIp(ip): InsecureClientIp,
     req: Request<Body>,
-    next: Next<Body>,
+    next: Next,
 ) -> HTTPResult<Response> {
     let start_at = STARTED_AT.with(clone_value_from_task_local);
     let uri = req.uri().to_string();
