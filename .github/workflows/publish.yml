@@ -11,7 +11,7 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
-    timeout-minutes: 3600
+    timeout-minutes: 7200
     steps: 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
